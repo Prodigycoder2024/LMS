@@ -1,7 +1,0 @@
-<h1>Assignment List</h1>
-<a href="{% url 'create_assignment' %}">Create Assignment</a>
-<ul>
-    {% for assignment in assignments %}
-    <li>{{ assignment.title }} - <a href="{% url 'create_submission' assignment.id %}">Submit</a></li>
-    {% endfor %}
-</ul>
