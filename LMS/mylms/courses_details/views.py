@@ -3,6 +3,8 @@ from django.contrib.auth import login as auth_login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash, get_user_model
+from django.contrib.auth import login
+from django.contrib.auth import login as auth_login
 from .forms import SignUpForm, LoginForm, AssignmentForm, SubmissionForm, GradeForm
 from .models import InstructorData, Assignment, Submission, Grade
 
@@ -11,24 +13,42 @@ def register(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            # Create the user object but don't save it yet
+            user = form.save(commit=False)
+
+            # Set the password manually
+            password = form.cleaned_data.get('password1')
+            user.set_password(password)
+            user.save()
+
+            # Handle role-specific data
             role = request.POST.get('role')
             if role == 'instructor':
                 instructor_name = request.POST.get('instructorName')
                 instructor_qualification = request.POST.get('instructorQualification')
+
+                # Save the instructor-specific data
                 InstructorData.objects.create(
                     user=user,
                     instructorName=instructor_name,
                     instructorQualification=instructor_qualification
                 )
-            user = authenticate(username=user.username, password=request.POST.get('password1'))
-            if user is not None:
-                auth_login(request, user)
-                return redirect('home')
+
+            # Authenticate the user
+            authenticated_user = authenticate(username=user.username, password=password)
+            if authenticated_user is not None:
+                # Log the user in if authentication is successful
+                login(request, authenticated_user)
+                return redirect('dashboard')  # Ensure 'home' is defined in your URLs
+            else:
+                # Handle the case where authentication fails (unlikely but good practice)
+                print("Authentication failed")
         else:
-            messages.error(request, 'Please correct the errors below.')
+            # Print form errors if the form is invalid
+            print("Form is not valid", form.errors)
     else:
         form = SignUpForm()
+
     return render(request, 'login/register.html', {'form': form})
 
 # User login view
@@ -121,6 +141,7 @@ def create_assignment(request):
             return redirect('assignment_list')
     else:
         form = AssignmentForm()
+    print(form['category'])
     return render(request, 'courses_details/assignment_form.html', {'form': form})
 
 # Submit assignment view
@@ -183,3 +204,13 @@ def create_submission(request, assignment_id):
 def submission_list(request):
     submissions = Submission.objects.filter(student=request.user)
     return render(request, 'assignments/submission_list.html', {'submissions': submissions})
+
+def save_assignment(request):
+    if request.method == 'POST':
+        form = AssignmentForm(request.POST)
+        if form.is_valid():
+            form.save()  # Save the form data to the database
+            messages.success(request, 'Assignment saved successfully!')  # Add a success message
+            return redirect('assignment_list')  
+    else:
+        form = AssignmentForm()  # Create an empty form instance
