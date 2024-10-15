@@ -41,7 +41,7 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 auth_login(request, user)
-                return redirect('dashboard')
+                return redirect('dashboard')  # Redirect to dashboard or desired page
             else:
                 messages.error(request, 'Invalid username or password')
     else:
@@ -108,7 +108,7 @@ def assignment_list(request):
     assignments = Assignment.objects.all()
     return render(request, 'courses_details/assignment_list.html', {'assignments': assignments})
 
-# Create assignment view
+# Create assignment view (Updated)
 @login_required
 def create_assignment(request):
     if request.method == 'POST':
@@ -161,7 +161,7 @@ def grade_list(request):
     grades = Grade.objects.filter(submission__student=request.user)
     return render(request, 'grades/grade_list.html', {'grades': grades})
 
-# Create submission view
+# Create submission view (for a specific assignment)
 @login_required
 def create_submission(request, assignment_id):
     assignment = get_object_or_404(Assignment, id=assignment_id)
@@ -178,5 +178,8 @@ def create_submission(request, assignment_id):
         form = SubmissionForm()
     return render(request, 'assignments/submit_assignment.html', {'form': form, 'assignment': assignment})
 
-def submission_list():
-    pass
+# Submission list (empty view placeholder)
+@login_required
+def submission_list(request):
+    submissions = Submission.objects.filter(student=request.user)
+    return render(request, 'assignments/submission_list.html', {'submissions': submissions})

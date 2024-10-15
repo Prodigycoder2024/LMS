@@ -7,7 +7,6 @@ from courses_details import views
 
 urlpatterns = [
 
-    # other url patterns
 
     # Password reset
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),

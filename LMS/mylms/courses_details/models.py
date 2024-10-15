@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import User
+from django import forms
+from django.utils import timezone
 
 # Custom user model
 class User(AbstractUser):
@@ -13,19 +15,12 @@ class User(AbstractUser):
 
 # Instructor data model
 class InstructorData(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE,related_name='instructor_data', null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='instructor_data', null=True, blank=True)
     instructorName = models.CharField(max_length=255)
     instructorQualification = models.CharField(max_length=255)
 
     def __str__(self):
         return self.instructorName 
-# class InstructorData(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='instructor_data', null=True, blank=True)
-#     instructor_name = models.CharField(max_length=100)
-#     instructor_qualification = models.CharField(max_length=100)
-
-#     def __str__(self):
-#         return f"{self.instructor_name} - {self.instructor_qualification}"
 
 # Assignment model
 class Assignment(models.Model):

@@ -1,12 +1,17 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import Assignment, Submission, Grade, InstructorData, User
+from django.forms.widgets import DateInput
 
-# Form for creating assignments
+# Form for creating assignments (with calendar date picker for due_date)
 class AssignmentForm(forms.ModelForm):
     class Meta:
         model = Assignment
         fields = ['title', 'description', 'due_date']
+
+        widgets = {
+            'due_date': DateInput(attrs={'type': 'date'}),  # Adding the calendar (date picker)
+        }
 
 # Form for submitting assignments (includes assignment selection)
 class SubmissionForm(forms.ModelForm):
