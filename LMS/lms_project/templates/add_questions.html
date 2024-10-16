@@ -1,0 +1,101 @@
+<!-- add_questions.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/script.js' %}"></script>
+    <title>Add Questions</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Add Questions for "{{ assignment.title }}"</h1>
+        <form method="post" id="question-form">
+            {% csrf_token %}
+            {{ question_form.as_p }}
+
+            <div id="options-container" style="display: none;">
+                <h3>Options</h3>
+                <div id="options-list">
+                    <div class="option">
+                        <input type="text" name="options" placeholder="Option 1">
+                        <input type="checkbox" name="correct_answers" value="0"> Correct
+                        <button type="button" class="remove-option" onclick="removeOption(this)">Remove</button>
+                    </div>
+                    <div class="option">
+                        <input type="text" name="options" placeholder="Option 2">
+                        <input type="checkbox" name="correct_answers" value="1"> Correct
+                        <button type="button" class="remove-option" onclick="removeOption(this)">Remove</button>
+                    </div>
+                </div>
+                <button type="button" id="add-option">Add Option</button>
+            </div>
+
+            <button type="submit">Add Question</button>
+        </form>
+
+        <h2>Existing Questions</h2>
+        <ul>
+            {% for question in questions %}
+                <li>{{ question.subtitle }}: {{ question.question_text }} - Type: {{ question.get_question_type_display }}</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'assignment_list' %}">Back to assignments</a>
+    </div>
+<script>
+    // static/js/script.js
+document.addEventListener('DOMContentLoaded', function() {
+    const questionTypeSelect = document.querySelector('#id_question_type');
+    const optionsContainer = document.getElementById('options-container');
+    const optionsList = document.getElementById('options-list');
+    const addOptionButton = document.getElementById('add-option');
+
+    questionTypeSelect.addEventListener('change', function() {
+        if (this.value === 'multiple_choice') {
+            optionsContainer.style.display = 'block';
+        } else {
+            optionsContainer.style.display = 'none';
+        }
+    });
+
+    addOptionButton.addEventListener('click', addOption);
+
+    function addOption() {
+        const optionDiv = document.createElement('div');
+        optionDiv.classList.add('option');
+
+        const optionInput = document.createElement('input');
+        optionInput.type = 'text';
+        optionInput.placeholder = 'Option';
+        optionInput.name = 'options'; // All options will be sent as a list
+
+        const correctCheckbox = document.createElement('input');
+        correctCheckbox.type = 'checkbox';
+        correctCheckbox.name = 'correct_answers';
+        const index = optionsList.childElementCount; // Get the index for value
+        correctCheckbox.value = index; // Store the index as the value
+
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.textContent = 'Remove';
+        removeButton.onclick = function() {
+            optionsList.removeChild(optionDiv);
+        };
+
+        optionDiv.appendChild(optionInput);
+        optionDiv.appendChild(correctCheckbox);
+        optionDiv.appendChild(removeButton);
+        optionsList.appendChild(optionDiv);
+    }
+
+    window.removeOption = function(button) {
+        const optionDiv = button.parentElement;
+        optionsList.removeChild(optionDiv);
+    };
+});
+
+</script>    
+</body>
+</html>

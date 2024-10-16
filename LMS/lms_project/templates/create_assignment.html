@@ -1,0 +1,41 @@
+<!-- create_assignment.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Create Assignment</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Assignment</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_title"><small style="color: red;">*</small>Title :</label>
+                {{ form.title }}  <!-- Using custom input -->
+            </div>
+            <div class="form-group">
+                <label for="id_category"><small style="color: red;">*</small>Category:</label>
+                {{ form.category }}
+            </div>
+            <div class="form-group">
+                <label for="id_description">Description:</label>
+                {{ form.description }}
+            </div>
+            <div class="form-group">
+                <label for="id_prerequisites">Prerequisites:</label>
+                {{ form.prerequisites }}
+            </div>
+            <div class="form-group">
+                <label for="id_due_date">Due Date:</label>
+                {{ form.due_date }}
+            </div>
+            <button type="submit" class="btn btn-primary">Create Assignment</button>
+        </form>
+        <a href="{% url 'assignment_list' %}">Back to assignments</a>
+    </div>
+</body>
+</html>
